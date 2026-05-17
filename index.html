@@ -5,20 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Why Weight Scout - Test Page</title>
     
-    <!-- Dialogflow Messenger CSS Stylesheet -->
     <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+
+    <style>
+        /* 1. APPLY CHERRY BLOSSOM BACKGROUND */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fcf8f2; /* Light background color */
+            background-image: url('https://www.whyweightnutrition.com/content/images/cherry_blossom_branch_watermark.png'); /* References imagery on whyweightnutrition.com */
+            background-repeat: no-repeat;
+            background-position: right top;
+            background-size: 40%; /* Watermark scale */
+            background-attachment: fixed;
+        }
+
+        /* 2. TEXT CONTAINER STYLING */
+        .content-container {
+            max-width: 700px;
+            margin: 100px auto;
+            padding: 40px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white box for text */
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: #d4af37; /* Why Weight brand Gold */
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #555;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        /* 3. FIX CHAT BUBBLE PLACEMENT (BOTTOM-RIGHT) */
+        df-messenger {
+            position: fixed;
+            z-index: 999;
+            --df-messenger-brand-color: #d4af37; /* Gold theme */
+        }
+        
+        /* Overrides default placement to force bottom-right */
+        df-messenger-chat-bubble {
+            right: 20px !important;
+            bottom: 20px !important;
+            left: auto !important;
+        }
+    </style>
 </head>
 <body>
 
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;">
+    <div class="content-container">
         <h1>Why Weight Scout AI Agent</h1>
-        <p>Testing page for the Why Weight Academy chat bot. Click the chat icon in the bottom right corner to begin the conversation.</p>
+        <p>This is the official testing page for the Why Weight Academy chat bot.</p>
+        <p>The cherry blossom imagery reflects the brand identity of Why Weight Nutrition.</p>
+        <p>Please use the button on the bottom right to begin.</p>
     </div>
 
-    <!-- Dialogflow Messenger Script -->
     <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
     
-    <!-- Your Custom Chat Agent Widget -->
     <df-messenger
       project-id="why-weight-scout"
       agent-id="5b419b8f-8141-454e-bbd1-a7b4e522e766"
