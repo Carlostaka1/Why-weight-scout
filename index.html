@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Weight Scout - Test Page</title>
+    
+    <!-- Dialogflow Messenger CSS Stylesheet -->
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+</head>
+<body>
+
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;">
+        <h1>Why Weight Scout AI Agent</h1>
+        <p>Testing page for the Why Weight Academy chat bot. Click the chat icon in the bottom right corner to begin the conversation.</p>
+    </div>
+
+    <!-- Dialogflow Messenger Script -->
+    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+    
+    <!-- Your Custom Chat Agent Widget -->
+    <df-messenger
+      project-id="why-weight-scout"
+      agent-id="5b419b8f-8141-454e-bbd1-a7b4e522e766"
+      language-code="en"
+      max-query-length="-1">
+      <df-messenger-chat-bubble
+        chat-title="Why Weight Scout">
+      </df-messenger-chat-bubble>
+    </df-messenger>
+
+</body>
+</html>
