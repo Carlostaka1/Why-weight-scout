@@ -55,6 +55,7 @@
     <script>
     (function () {
         var PROXY = "https://why-weight-proxy-qam5mbhetq-uc.a.run.app";
+        var MAX_RETRIES = 1;
 
         var URL_BUTTONS = {
             "Sheryl's FREE 3-Day Reset Plan to get the scales moving again": "https://www.whyweightacademy.com/newsletter-opt-in",
@@ -79,12 +80,50 @@
         function parseButtons(raw){var btnRe=/\[\[BUTTONS\]\]([\s\S]*?)\[\[\/BUTTONS\]\]/g;var buttons=[];var text=raw.replace(btnRe,function(_,inner){inner.split("\n").forEach(function(line){var l=line.trim();if(l)buttons.push(l)});return""}).trim();return{text:text,buttons:buttons}}
         function scrollBottom(){msgs.scrollTop=msgs.scrollHeight}
         function addMsg(text,who){var d=document.createElement("div");d.className="msg "+who;if(who==="bot")d.innerHTML=linkify(text);else d.textContent=text;msgs.appendChild(d);scrollBottom();return d}
-        function addButtons(options){var group=document.createElement("div");group.className="btn-group";options.forEach(function(label){var btn=document.createElement("button");btn.className="btn-chip";btn.textContent=label;btn.addEventListener("click",function(){if(URL_BUTTONS[label]){window.open(URL_BUTTONS[label],"_blank");return}group.querySelectorAll(".btn-chip").forEach(function(c){c.classList.add("used")});sendMessage(label)});group.appendChild(btn)});msgs.appendChild(group);scrollBottom();return group}
+        function openUrl(url){var a=document.createElement("a");a.href=url;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove()}
+        function addButtons(options){var group=document.createElement("div");group.className="btn-group";options.forEach(function(label){var btn=document.createElement("button");btn.className="btn-chip";btn.textContent=label;btn.addEventListener("click",function(){if(URL_BUTTONS[label]){openUrl(URL_BUTTONS[label]);return}group.querySelectorAll(".btn-chip").forEach(function(c){c.classList.add("used")});sendMessage(label)});group.appendChild(btn)});msgs.appendChild(group);scrollBottom();return group}
         function addBotResponse(raw){var parsed=parseButtons(raw);if(parsed.text)addMsg(parsed.text,"bot");if(parsed.buttons.length)addBotButtons(parsed.buttons)}
         var lastBtnGroup=null;
         function addBotButtons(options){lastBtnGroup=addButtons(options)}
         function disableLastButtons(){if(lastBtnGroup){lastBtnGroup.querySelectorAll(".btn-chip").forEach(function(c){c.classList.add("used")});lastBtnGroup=null}}
-        function sendMessage(text){if(!text)return;disableLastButtons();addMsg(text,"user");inp.value="";snd.disabled=true;var typing=document.createElement("div");typing.className="msg bot typing";typing.innerHTML="<span></span><span></span><span></span>";msgs.appendChild(typing);scrollBottom();fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text,user_id:userId,session_id:sessionId})}).then(function(r){return r.json()}).then(function(data){typing.remove();if(data.session_id)sessionId=data.session_id;var response=data.response||data.error||"Sorry, something went wrong.";addBotResponse(response);snd.disabled=false;inp.focus()}).catch(function(){typing.remove();addMsg("Sorry, I couldn't connect. Please try again.","bot");snd.disabled=false})}
+
+        function callProxy(text, retries){
+            return fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text,user_id:userId,session_id:sessionId})})
+            .then(function(r){return r.json()})
+            .then(function(data){
+                if(data.session_id) sessionId=data.session_id;
+                var response=data.response||"";
+                if((!response||response==="(no text returned)")&&retries>0){
+                    return callProxy(text, retries-1);
+                }
+                return response||"Sorry, I didn't catch that. Could you try again?";
+            });
+        }
+
+        function sendMessage(text){
+            if(!text)return;
+            disableLastButtons();
+            addMsg(text,"user");
+            inp.value="";
+            snd.disabled=true;
+            var typing=document.createElement("div");
+            typing.className="msg bot typing";
+            typing.innerHTML="<span></span><span></span><span></span>";
+            msgs.appendChild(typing);
+            scrollBottom();
+            callProxy(text, MAX_RETRIES)
+            .then(function(response){
+                typing.remove();
+                addBotResponse(response);
+                snd.disabled=false;
+                inp.focus();
+            })
+            .catch(function(){
+                typing.remove();
+                addMsg("Sorry, I couldn't connect. Please try again.","bot");
+                snd.disabled=false;
+            });
+        }
 
         addBotResponse(
             "Hi, I'm Sheryl's Virtual Assistant \u2014 how can I help today?\n\n" +
